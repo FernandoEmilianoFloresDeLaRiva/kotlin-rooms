@@ -27,6 +27,7 @@ data class BookEntity(
     @ColumnInfo(name = "author_id")
     val authorId: Int,
     val year: Int,
+    var content : String,
     @ColumnInfo(name = "created_at", defaultValue = "CURRENT_TIMESTAMP")
     val createdAt : String = ""
 )

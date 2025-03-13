@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 class CreateBookViewModel(app : Application) : AndroidViewModel(app) {
     private var _title =  mutableStateOf("")
     private var _year  = mutableStateOf("")
+    private var _content = mutableStateOf("")
     private var _selectedAuthor = mutableIntStateOf(0)
     private var _expanded = mutableStateOf(false)
     private val _createBookRepository = BookRepository(app)
@@ -21,14 +22,26 @@ class CreateBookViewModel(app : Application) : AndroidViewModel(app) {
             viewModelScope.launch {
                 _createBookRepository.insertBook(
                     BookEntity(
-                        title = _title.value, year = _year.value.toInt(), authorId = _selectedAuthor.intValue
+                        title = _title.value,
+                        year = _year.value.toInt(),
+                        authorId = _selectedAuthor.intValue,
+                        content = _content.value
                     )
                 )
                 _title.value = ""
                 _year.value = ""
+                _content.value = ""
                 _selectedAuthor.intValue = 0
             }
         }
+    }
+
+    fun getContentValue() : String {
+        return _content.value
+    }
+
+    fun setContentValue(value : String) {
+        _content.value = value
     }
 
     fun getTitleValue() : String {

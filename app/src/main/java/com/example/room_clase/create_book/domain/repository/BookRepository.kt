@@ -13,7 +13,11 @@ class BookRepository(ctx : Context) {
         bookDAO.insertBook(book)
     }
 
-    suspend fun getBooks() : List<AuthorWithBooks> {
+    suspend fun getBooksWithAuthor() : List<AuthorWithBooks> {
         return authorDAO.getAuthorWithBooks()
+    }
+
+    suspend fun getBooks() : List<BookEntity> {
+        return bookDAO.getAllBooks()
     }
 }

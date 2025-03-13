@@ -17,10 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.room_clase.core.data.local.authors.relations.AuthorWithBooks
+import com.example.room_clase.core.data.local.books.entities.BookEntity
 import com.example.room_clase.core.services.TextToSpeechService
 
 @Composable
-fun BookCard(authorWithBooks: AuthorWithBooks, context : Context) {
+fun BookCard(authorWithBooks: BookEntity, context : Context) {
     val intent = Intent(context, TextToSpeechService::class.java)
 
     Card(
@@ -36,24 +37,23 @@ fun BookCard(authorWithBooks: AuthorWithBooks, context : Context) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Autor: ${authorWithBooks.author.name}",
+                text = "Autor: ${authorWithBooks.title} - (${authorWithBooks.year})",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
 
-            authorWithBooks.books.forEach { book ->
+
                 Text(
-                    text = "- ${book.title} (${book.year})",
+                    text = authorWithBooks.content,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
-            }
+
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(onClick = {
-                val bookTitles = authorWithBooks.books.joinToString(", ") { it.title }
-                intent.putExtra("BOOK_TEXT", "Autor ${authorWithBooks.author.name}. Libros: $bookTitles")
+                intent.putExtra("BOOK_TEXT", "Titulo ${authorWithBooks.title}, contenido ${authorWithBooks.content}")
                 context.startService(intent)
             }) {
                 Text("Escuchar")

@@ -80,6 +80,16 @@ fun CreateBookPage(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
+            value = createBookViewModel.getContentValue(),
+            onValueChange = { createBookViewModel.setContentValue(it) },
+            label = { Text("Content") },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
             value = createBookViewModel.getYearValue(),
             onValueChange = { createBookViewModel.setYearValue(it) },
             label = { Text("Year") },
