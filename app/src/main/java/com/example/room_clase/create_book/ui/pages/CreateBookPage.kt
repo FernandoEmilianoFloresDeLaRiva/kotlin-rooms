@@ -94,7 +94,7 @@ fun CreateBookPage(
                 createBookViewModel.saveBook()
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = createBookViewModel.isButtonEnabled
+            enabled = createBookViewModel.getTitleValue().isNotBlank() && createBookViewModel.getYearValue().isNotBlank()
         ) {
             Text("Guardar libro")
         }
