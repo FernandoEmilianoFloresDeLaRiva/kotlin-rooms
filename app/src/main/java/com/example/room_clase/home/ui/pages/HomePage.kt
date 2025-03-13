@@ -1,11 +1,14 @@
 package com.example.room_clase.home.ui.pages
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -14,14 +17,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.room_clase.core.data.local.authors.relations.AuthorWithBooks
+import com.example.room_clase.core.services.TextToSpeechService
 import com.example.room_clase.home.ui.viewmodels.HomePageViewModel
 
 @Composable
 fun HomePage(
     homePageViewModel: HomePageViewModel
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit){
         homePageViewModel.getBooks()
     }
@@ -30,13 +36,15 @@ fun HomePage(
 
     LazyColumn {
         items(authorsWithBooks.size) {
-            BookCard(authorsWithBooks[it])
+            BookCard(authorsWithBooks[it], context)
         }
     }
 }
 
 @Composable
-fun BookCard(authorWithBooks: AuthorWithBooks) {
+fun BookCard(authorWithBooks: AuthorWithBooks, context : Context) {
+    val intent = Intent(context, TextToSpeechService::class.java)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -61,6 +69,16 @@ fun BookCard(authorWithBooks: AuthorWithBooks) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(onClick = {
+                val bookTitles = authorWithBooks.books.joinToString(", ") { it.title }
+                intent.putExtra("BOOK_TEXT", "Autor ${authorWithBooks.author.name}. Libros: $bookTitles")
+                context.startService(intent)
+            }) {
+                Text("Escuchar")
             }
         }
     }

@@ -16,6 +16,7 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
     private lateinit var textToSpeech: TextToSpeech
     private var bookText: String? = null
     private var isSpeaking = false
+    private var isTtsInitialized = false
 
     override fun onCreate() {
         super.onCreate()
@@ -23,24 +24,47 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == "STOP") {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
         bookText = intent?.getStringExtra("BOOK_TEXT")
         startForeground(1, createNotification("Iniciando..."))
-        bookText?.let { speakText(it) }
+
+        if (isTtsInitialized) {
+            bookText?.let { speakText(it) }
+        }
+
         return START_NOT_STICKY
-    }
-
-    private fun speakText(text: String) {
-        if (!::textToSpeech.isInitialized) return
-
-        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "TTS_ID")
-        isSpeaking = true
-        updateNotification("Leyendo en voz alta...")
     }
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
-            textToSpeech.language = Locale("es", "ES") // Español
+            textToSpeech.language = Locale("es", "MX")
+
+            val result = textToSpeech.setLanguage(Locale("es", "MX"))
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                stopSelf()
+                return
+            }
+
+            isTtsInitialized = true
+
+            bookText?.let { speakText(it) }
+        } else {
+            stopSelf()
         }
+    }
+
+    private fun speakText(text: String) {
+        if (!isTtsInitialized) {
+            return
+        }
+
+        textToSpeech.speak(text, TextToSpeech.QUEUE_ADD, null, "TTS_ID")
+        isSpeaking = true
+        updateNotification("Leyendo en voz alta...")
     }
 
     private fun updateNotification(text: String) {
@@ -53,7 +77,12 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
         val stopIntent = Intent(this, TextToSpeechService::class.java).apply {
             action = "STOP"
         }
-        val stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val stopPendingIntent = PendingIntent.getService(
+            this,
+            0,
+            stopIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
         return NotificationCompat.Builder(this, "TTS_CHANNEL")
             .setContentTitle("Lector de Libros")
