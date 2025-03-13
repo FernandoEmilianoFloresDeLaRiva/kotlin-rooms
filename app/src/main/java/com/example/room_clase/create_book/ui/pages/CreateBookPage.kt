@@ -38,8 +38,8 @@ fun CreateBookPage(
     Column(modifier = modifier.padding(16.dp)) {
 
         OutlinedTextField(
-            value = createBookViewModel.title.value,
-            onValueChange = { createBookViewModel.title.value = it },
+            value = createBookViewModel.getTitleValue(),
+            onValueChange = { createBookViewModel.setTitleValue(it) },
             label = { Text("Title") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -48,27 +48,29 @@ fun CreateBookPage(
 
         Box(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
-                value = authors.find { it.id == createBookViewModel.selectedAuthor.intValue }?.name ?: "",
+                value = createAuthorVM.findAuthorById(createBookViewModel.getSelectedAuthorValue())?.name ?: "",
                 onValueChange = {},
                 label = { Text("Author") },
                 readOnly = true,
                 trailingIcon = {
-                    IconButton(onClick = { createBookViewModel.expanded.value = !createBookViewModel.expanded.value }) {
+                    IconButton(onClick = {
+                        createBookViewModel.setExpandedValue(!createBookViewModel.getExpandedValue())
+                    }) {
                         Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Expand")
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
             DropdownMenu(
-                expanded = createBookViewModel.expanded.value,
-                onDismissRequest = { createBookViewModel.expanded.value = false }
+                expanded = createBookViewModel.getExpandedValue(),
+                onDismissRequest = { createBookViewModel.setExpandedValue(false) }
             ) {
                 authors.forEach { author ->
                     DropdownMenuItem(
                         text = { Text(author.name) },
                         onClick = {
-                            createBookViewModel.selectedAuthor.intValue = author.id
-                            createBookViewModel.expanded.value = false
+                            createBookViewModel.setSelectedAuthor(author.id)
+                            createBookViewModel.setExpandedValue(false)
                         }
                     )
                 }
@@ -78,12 +80,8 @@ fun CreateBookPage(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = createBookViewModel.year.value,
-            onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() }) {
-                    createBookViewModel.year.value = newValue
-                }
-            },
+            value = createBookViewModel.getYearValue(),
+            onValueChange = { createBookViewModel.setYearValue(it) },
             label = { Text("Year") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
@@ -96,7 +94,7 @@ fun CreateBookPage(
                 createBookViewModel.saveBook()
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = createBookViewModel.title.value.isNotBlank() && createBookViewModel.year.value.isNotBlank()
+            enabled = createBookViewModel.isButtonEnabled
         ) {
             Text("Guardar libro")
         }

@@ -31,4 +31,8 @@ class CreateAuthorViewModel(app : Application) : AndroidViewModel(app) {
             authors.value = _authorRespository.getAuthors()
         }
     }
+
+    fun findAuthorById(id : Int) : AuthorEntity? {
+        return authors.value.find { it.id == id }
+    }
 }
