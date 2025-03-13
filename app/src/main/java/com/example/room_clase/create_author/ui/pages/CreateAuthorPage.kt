@@ -9,7 +9,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.room_clase.create_author.ui.viewmodels.CreateAuthorViewModel
@@ -21,8 +20,8 @@ fun CreateAuthorPage(
 ) {
     Column(modifier = modifier.padding(16.dp)) {
         OutlinedTextField(
-            value = createAuthorViewModel.name.value,
-            onValueChange = {  createAuthorViewModel.name.value = it },
+            value = createAuthorViewModel.getNameValue(),
+            onValueChange = {  createAuthorViewModel.setNameValue(it) },
             label = { Text("Nombre del autor") },
             modifier = Modifier.fillMaxWidth()
         )

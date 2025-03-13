@@ -35,4 +35,12 @@ class CreateAuthorViewModel(app : Application) : AndroidViewModel(app) {
     fun findAuthorById(id : Int) : AuthorEntity? {
         return authors.value.find { it.id == id }
     }
+
+    fun getNameValue() : String {
+        return name.value
+    }
+
+    fun setNameValue(value : String) {
+        name.value = value
+    }
 }
